@@ -32,3 +32,92 @@ build/
 
 ### VS Code ###
 .vscode/
+
+
+
+# Ignore Rider and IDE files
+.idea/
+*.sln.iml
+*.user
+*.suo
+*.cache
+*.bak
+*.ncb
+*.log
+*.obj
+*.pdb
+*.ipch
+*.ilk
+*.aps
+*.sdf
+*.dbmdl
+*.opendb
+
+# Rider-specific files
+*.DotSettings.user
+**/.idea/
+**/.idea/*
+
+# Build outputs
+bin/
+obj/
+out/
+*.exe
+*.dll
+*.so
+*.dylib
+*.lib
+*.a
+*.exp
+*.idb
+*.mdb
+
+# Packages
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+project.lock.json
+project.assets.json
+
+# Logs and debug
+*.tlog
+*.dmp
+*.tmp
+*.sln.docstates
+
+# User settings and cache
+.vs/
+*.userprefs
+*.localhistory/
+*.sln.ide
+*.sln.cache
+
+# Dotnet tools
+.dotnet/
+*.dotCover
+*.ncrunch*
+*.coverage
+*.cov
+*.testResults
+testResults/
+coverage/
+
+# Temporary and OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.sublime-*
+
+# Rider-specific artifacts
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/gradle.xml
+.idea/libraries/
+.idea/modules.xml
+.idea/misc.xml
+.idea/uiDesigner.xml
+.idea/dictionaries/
+.idea/shelf/
+.idea/httpRequests/
