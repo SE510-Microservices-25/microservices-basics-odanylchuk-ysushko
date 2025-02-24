@@ -1,0 +1,7 @@
+services:
+  tasks:
+    build:
+      context: .
+      dockerfile: ./Docker/Dockerfile
+    ports:
+      - "5002:8080"
