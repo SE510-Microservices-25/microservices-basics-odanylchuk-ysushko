@@ -1,0 +1,26 @@
+services:
+  postgres:
+    image: postgres:14-alpine
+    restart: always
+    shm_size: 128mb
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=ODanylchuk
+      - POSTGRES_DB=UsersDB
+      - POSTGRES_PASSWORD=some_awesome_password
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ODanylchuk -d UsersDB"]
+      interval: 10s
+      retries: 5
+
+  userservice:
+    image: userservice:latest
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    ports:
+      - 8080:8080
+    depends_on:
+      postgres:
+        condition: service_healthy
