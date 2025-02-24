@@ -12,5 +12,10 @@ public class HelloController {
     public String sayHello() {
         return "Hello, Swagger!";
     }
-}
 
+    @GetMapping("/health")
+    public String health() {
+        return "I'm healthy!";
+    }
+
+}
