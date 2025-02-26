@@ -1,31 +1,63 @@
-namespace TasksController;
+namespace Tasks.Controller;
 
+using Tasks.Models;
+using Tasks.Data;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 
 [Route("api/task/")]
 [ApiController]
 public class TasksController : ControllerBase
 {
-    // public TasksController()  db in future
-    // {
-    //     
-    // }
+    private readonly AppDbContext _context;
+
+    public TasksController(AppDbContext context)
+    {
+        _context = context;
+    }
 
     [HttpGet]
-    public IActionResult GetAll()
+    public async Task<ActionResult<IEnumerable<TaskModel>>> GetTasks()
     {
-        return Ok("All tasks");
+        var tasks = await _context.TaskModel.ToListAsync();
+    
+        if (tasks == null || tasks.Count == 0)
+        {
+            return NotFound("No tasks found.");
+        }
+
+        return tasks;
     }
     
     [HttpGet("{id}")]
-    public IActionResult GetTask([FromRoute] int id)
+    public async Task<ActionResult<TaskModel>> GetTaskById([FromRoute] int id)
     {
-        return Ok($"Task with id: {id}");
+        var task = await _context.TaskModel.FindAsync(id);
+    
+        if (task == null)
+        {
+            return NotFound($"Task with ID {id} not found.");
+        }
+
+        return task;
     }
     
-    [HttpGet ("list/{listId}")]
-    public IActionResult GetTaskList([FromRoute] int listId)
+    [HttpPost("create")]
+    public async Task<IActionResult> CreateTask([FromBody] string title)
     {
-        return Ok($"Task list with ID: {listId}");
+        if (string.IsNullOrEmpty(title))
+        {
+            return BadRequest("Task name is required.");
+        }
+        
+        var task = new TaskModel
+        {
+            title = title,
+        };
+        _context.TaskModel.Add(task);
+        await _context.SaveChangesAsync();
+        
+        return Ok(task);
     }
+
 }

@@ -111,3 +111,5 @@ Thumbs.db
 *.sublime-*
 
 Tasks/obj
+.env
+Migrations

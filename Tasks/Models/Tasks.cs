@@ -1,9 +1,7 @@
-namespace  TasksModels;
-public class Task
+namespace  Tasks.Models;
+public class TaskModel
 {
-    public int Id { get; set; }
-    public string Title { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
-    public string AssignedTo { get; set; } = string.Empty;
-    public bool IsCompleted { get; set; }
+    public int id { get; set; }
+    public string title { get; set; } = string.Empty;
+    public bool is_completed { get; set; }
 }
