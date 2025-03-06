@@ -1,0 +1,114 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+  namespace: default
+  labels:
+    app: postgres
+
+data:
+  POSTGRES_DB: "UsersDB"
+  POSTGRES_USER: "ODanylchuk"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres-secret
+  namespace: default
+  labels:
+    app: postgres
+
+type: Opaque
+data:
+  POSTGRES_PASSWORD: "c29tZV9hd2Vzb21lX3Bhc3N3b3Jk"  # Base64-encoded password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: default
+spec:
+  type: ClusterIP
+  selector:
+    app: postgres
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:14-alpine
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - configMapRef:
+                name: postgres-config
+            - secretRef:
+                name: postgres-secret
+          volumeMounts:
+            - mountPath: /dev/shm
+              name: dshm
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "ODanylchuk", "-d", "UsersDB"]
+            initialDelaySeconds: 5
+            periodSeconds: 10
+      volumes:
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: users-microservice
+  namespace: default
+spec:
+  selector:
+    app: users-microservice
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: users-microservice
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: users-microservice
+  template:
+    metadata:
+      labels:
+        app: users-microservice
+    spec:
+      containers:
+        - name: users-microservice
+          image: odanylchuk/userservice:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DATABASE_URL
+              value: "postgres://ODanylchuk:c29tZV9hd2Vzb21lX3Bhc3N3b3Jk@postgres:5432/UsersDB"
+      restartPolicy: Always
