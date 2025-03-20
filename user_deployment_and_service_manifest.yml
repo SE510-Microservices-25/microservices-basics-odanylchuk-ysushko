@@ -88,6 +88,50 @@ spec:
       port: 8080
       targetPort: 8080
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq
+  namespace: default
+spec:
+  ports:
+    - name: amqp
+      port: 5672
+      targetPort: 5672 
+    - name: management
+      port: 15672
+      targetPort: 15672
+  selector:
+    app: rabbitmq
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      containers:
+        - name: rabbitmq
+          image: rabbitmq:3-management
+          ports:
+            - containerPort: 5672
+            - containerPort: 15672
+          env:
+            - name: RABBITMQ_DEFAULT_USER
+              value: guest
+            - name: RABBITMQ_DEFAULT_PASS
+              value: guest
+      restartPolicy: Always
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -110,5 +154,13 @@ spec:
             - containerPort: 8080
           env:
             - name: DATABASE_URL
-              value: "postgres://ODanylchuk:c29tZV9hd2Vzb21lX3Bhc3N3b3Jk@postgres:5432/UsersDB"
+              value: "jdbc:postgresql://postgres:5432/UsersDB"
+            - name: DB_USER
+              value: "ODanylchuk"
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
+
       restartPolicy: Always

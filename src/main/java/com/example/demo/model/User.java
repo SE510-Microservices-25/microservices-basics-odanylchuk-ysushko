@@ -8,13 +8,13 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    protected long id;
 
     @Column(nullable = false, unique = true)
-    private String username;
+    protected String username;
 
     @Column(nullable = false, unique = true)
-    private String token;
+    protected String token;
 
     // Default constructor (required by JPA)
     protected User() {}
@@ -28,10 +28,10 @@ public class User {
     }
 
     // Getters and setters
-    public Long getId() { return id; }
+    public long getId() { return id; }
+    public String getToken() { return token; }
 
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
-
-    public String getToken() { return token; }
+    public void setToken(String token) { this.token = token; }
 }
