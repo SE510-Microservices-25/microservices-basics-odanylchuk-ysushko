@@ -1,0 +1,49 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: microservices-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: microservices.local
+      http:
+        paths:
+          # any users request should be forwarded to the users-microservice (until roles added)
+          - path: /users
+            pathType: Prefix
+            backend:
+              service:
+                name: users-microservice
+                port:
+                  number: 8080
+          - path: /swagger-ui
+            pathType: Prefix
+            backend:
+              service:
+                name: users-microservice
+                port:
+                  number: 8080
+          # needed for the swagger-ui to work
+          - path: /v3/api-docs
+            pathType: Prefix
+            backend:
+              service:
+                name: users-microservice
+                port:
+                  number: 8080
+            backend:
+              service:
+                name: users-microservice
+                port:
+                  number: 8080
+          # any api request should be forwarded to the users-microservice
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: users-microservice
+                port:
+                  number: 8080
