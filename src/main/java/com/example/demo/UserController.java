@@ -7,9 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import com.example.demo.service.RabbitMqService;
 import com.example.demo.model.User;
-import com.example.demo.model.UserCreated;
-import com.example.demo.model.UserUpdated;
-import com.example.demo.model.UserDeleted;
+import com.example.demo.event.*;
 import com.example.demo.repository.UserRepository;
 
 @RestController
