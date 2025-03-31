@@ -21,6 +21,7 @@ services:
     build:
       context: .
       dockerfile: ./Docker/Dockerfile
+    image: melmn/tasks:latest
     ports:
       - "5002:8080"
     depends_on:
@@ -29,4 +30,4 @@ services:
     env_file:
       - .env
     environment:
-      DATABASE_URL: postgres://${PG_USER}:${PG_PASSWORD}@localhost:5432/tasksms
+      DATABASE_URL: postgres://${PG_USER}:${PG_PASSWORD}@db:5432/tasksms
