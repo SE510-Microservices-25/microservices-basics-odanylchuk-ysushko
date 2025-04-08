@@ -2,9 +2,7 @@ package com.example.demo.service;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
-import com.example.demo.model.UserCreated;
-import com.example.demo.model.UserUpdated;
-import com.example.demo.model.UserDeleted;
+import com.example.demo.event.*;
 
 @Service
 public class RabbitMqService {
