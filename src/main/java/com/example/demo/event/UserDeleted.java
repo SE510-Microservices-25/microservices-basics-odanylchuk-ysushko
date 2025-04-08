@@ -1,4 +1,4 @@
-package com.example.demo.model;
+package com.example.demo.event;
 
 import java.io.Serializable;
 
@@ -8,6 +8,4 @@ public class UserDeleted extends UserEvent implements Serializable {
         super(userId, null, null);
     }
 
-
-    
 }

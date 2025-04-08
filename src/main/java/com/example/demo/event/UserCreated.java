@@ -1,4 +1,4 @@
-package com.example.demo.model;
+package com.example.demo.event;
 
 import java.io.Serializable;
 
