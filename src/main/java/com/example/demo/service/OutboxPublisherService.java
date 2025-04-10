@@ -12,7 +12,6 @@ import com.example.demo.event.UserDeleted;
 import com.example.demo.event.UserUpdated;
 import com.example.demo.repository.IOutboxMessageRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
