@@ -4,6 +4,7 @@ metadata:
   name: microservices-ingress
   annotations:
     nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/auth-response-headers: "Authorization"
 
 spec:
   ingressClassName: nginx
@@ -34,11 +35,6 @@ spec:
                 name: users-microservice
                 port:
                   number: 8080
-            backend:
-              service:
-                name: users-microservice
-                port:
-                  number: 8080
           # any api request should be forwarded to the users-microservice
           - path: /api
             pathType: Prefix
@@ -47,3 +43,32 @@ spec:
                 name: users-microservice
                 port:
                   number: 8080
+          - path: /secure
+            pathType: Prefix
+            backend:
+              service:
+                name: users-microservice
+                port:
+                  number: 8080
+          - path: /realms
+            pathType: Prefix
+            backend:
+              service:
+                name: keycloak
+                port:
+                  number: 8080
+          - path: /resources
+            pathType: Prefix
+            backend:
+              service:
+                name: keycloak
+                port:
+                  number: 8080
+          - path: /protocol
+            pathType: Prefix
+            backend:
+              service:
+                name: keycloak
+                port:
+                  number: 8080
+
