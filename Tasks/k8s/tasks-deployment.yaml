@@ -1,12 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    kompose.cmd: kompose convert
-    kompose.version: 1.35.0 (9532ceef3)
+  name: tasks
   labels:
     io.kompose.service: tasks
-  name: tasks
 spec:
   replicas: 1
   selector:
@@ -14,34 +11,25 @@ spec:
       io.kompose.service: tasks
   template:
     metadata:
-      annotations:
-        kompose.cmd: kompose convert
-        kompose.version: 1.35.0 (9532ceef3)
       labels:
         io.kompose.service: tasks
     spec:
       containers:
-        - env:
-            - name: DATABASE_URL
-              value: postgres://:@db:5432/tasksms
-            - name: PGUSER
-              valueFrom:
-                configMapKeyRef:
-                  key: PGUSER
-                  name: env
-            - name: PG_PASSWORD
-              valueFrom:
-                configMapKeyRef:
-                  name: env
-                  key: PG_PASSWORD
+        - name: tasks
+          image: melmn/tasks:latest
+          ports:
+            - containerPort: 8080
+          env:
             - name: PG_USER
               valueFrom:
                 configMapKeyRef:
                   name: env
                   key: PG_USER
-          image: melmn/tasks:latest
-          name: tasks
-          ports:
-            - containerPort: 8080
-              protocol: TCP
-      restartPolicy: Always
+            - name: PG_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: env
+                  key: PG_PASSWORD
+            - name: DATABASE_URL
+              value: "postgres://yurii:1488@db:5432/tasksms"
+          imagePullPolicy: Always
