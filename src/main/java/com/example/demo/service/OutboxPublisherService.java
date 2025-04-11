@@ -18,18 +18,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class OutboxPublisherService {
     private final IOutboxMessageRepository outboxMessageRepository; 
     private final RabbitMqService rabbitMqService;
+    private final ObjectMapper objectMapper;
 
-    public OutboxPublisherService(IOutboxMessageRepository outboxRepo, RabbitMqService rabbitMqService) {
+    public OutboxPublisherService(IOutboxMessageRepository outboxRepo,
+                                  RabbitMqService rabbitMqService, 
+                                  ObjectMapper objectMapper) {
         this.outboxMessageRepository = outboxRepo;
         this.rabbitMqService = rabbitMqService;
+        this.objectMapper = objectMapper;
     }
 
     @Scheduled(fixedRate = 5000)
     @Transactional
     public void publishEvents() {
         List<OutboxMessage> messages = outboxMessageRepository.findByProcessedFalse();
-        ObjectMapper objectMapper = new ObjectMapper();
 
+        
         for (OutboxMessage msg : messages) {
             try {
                 Class<?> clazz = Class.forName(msg.getType());
@@ -48,6 +52,7 @@ public class OutboxPublisherService {
                 System.out.printf("Failed to process json payload: %s, error: %s%n", msg.getPayload(), e.getMessage());
             }
         }
+        
     }
 
     public void saveOutboxEvent(Object payload) {
