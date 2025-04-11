@@ -25,6 +25,7 @@ public class TestSecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/health", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                .requestMatchers("/users").hasRole("USER") // Allow access to /users only if the user has ROLE_USER
                 .anyRequest().authenticated()
             );
         return http.build();
