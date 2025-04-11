@@ -12,7 +12,6 @@ spec:
     - host: microservices.local
       http:
         paths:
-          # any users request should be forwarded to the users-microservice (until roles added)
           - path: /users
             pathType: Prefix
             backend:
