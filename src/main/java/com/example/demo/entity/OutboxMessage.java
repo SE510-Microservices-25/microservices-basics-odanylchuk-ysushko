@@ -3,15 +3,31 @@ package com.example.demo.entity;
 import jakarta.persistence.*;
 import java.util.UUID;
 
+import org.hibernate.annotations.GenericGenerator;
+
 @Entity
 @Table(name = "outbox_messages")
 public class OutboxMessage {
+    @Id
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(updatable = false, nullable = false)
+    private UUID id;
 
-    private UUID id = UUID.randomUUID();
+    @Column(nullable = false, unique = false)
     private String type = ""; // Event Type
+
+    @Column(nullable = false, unique = false)
     private String payload = ""; // Serialized JSON
+
+    @Column(nullable = false, unique = false)
     private java.time.Instant createdAt = java.time.Instant.now();
+
+    @Column(nullable = false, unique = false)
     private boolean processed = false; // Marks if published
+
+    // Default constructor (required by JPA)
+    public OutboxMessage() {}
 
     // Getters and setters
     public UUID getId() {
