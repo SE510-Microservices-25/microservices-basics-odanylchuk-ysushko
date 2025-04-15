@@ -32,4 +32,8 @@ spec:
                   key: PG_PASSWORD
             - name: DATABASE_URL
               value: "postgres://yurii:1488@db:5432/tasksms"
+            - name: ASPNETCORE_URLS
+              value: "http://*:5002"
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Development"
           imagePullPolicy: Always

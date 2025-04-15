@@ -11,6 +11,6 @@ spec:
   ports:
     - name: "5002"
       port: 5002
-      targetPort: 8080
+      targetPort: 5002
   selector:
     io.kompose.service: tasks
