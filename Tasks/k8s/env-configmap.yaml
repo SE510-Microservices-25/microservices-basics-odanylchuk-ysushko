@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: env
+  labels:
+    io.kompose.service: db-env
+data:
+  PG_PASSWORD: "1488"
+  PG_USER: "yurii"
+  POSTGRES_DB: "tasksms"
+  PGUSER: "yurii"
