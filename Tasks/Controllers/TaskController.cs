@@ -1,9 +1,9 @@
-namespace Tasks.Controller;
-
-using Tasks.Models;
-using Tasks.Data;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Tasks.Data;
+using Tasks.Models;
+
+namespace Tasks.Controllers;
 
 [Route("api/task/")]
 [ApiController]
