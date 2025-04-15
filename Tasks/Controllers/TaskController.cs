@@ -1,63 +1,78 @@
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Tasks.Data;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Tasks.Models;
+using Tasks.cqrs.Queries;
 
-namespace Tasks.Controllers;
-
-[Route("api/task/")]
-[ApiController]
-public class TasksController : ControllerBase
+namespace Tasks.Controllers
 {
-    private readonly AppDbContext _context;
-
-    public TasksController(AppDbContext context)
+    [Route("api/task/")]
+    [ApiController]
+    public class TasksController : ControllerBase
     {
-        _context = context;
-    }
+        private readonly IMediator _mediator;
 
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<TaskModel>>> GetTasks()
-    {
-        var tasks = await _context.TaskModel.ToListAsync();
-    
-        if (tasks == null || tasks.Count == 0)
+        public TasksController(IMediator mediator)
         {
-            return NotFound("No tasks found.");
+            _mediator = mediator;
         }
 
-        return tasks;
-    }
-    
-    [HttpGet("{id}")]
-    public async Task<ActionResult<TaskModel>> GetTaskById([FromRoute] int id)
-    {
-        var task = await _context.TaskModel.FindAsync(id);
-    
-        if (task == null)
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<TaskModel>>> GetTasks()
         {
-            return NotFound($"Task with ID {id} not found.");
+            var tasks = await _mediator.Send(new GetTasksQuery());
+            
+            if (tasks == null || tasks.Count == 0)
+            {
+                return NotFound("No tasks found.");
+            }
+
+            return Ok(tasks);
         }
 
-        return task;
-    }
-    
-    [HttpPost("create")]
-    public async Task<IActionResult> CreateTask([FromBody] string title)
-    {
-        if (string.IsNullOrEmpty(title))
+        [HttpGet("{id}")]
+        public async Task<ActionResult<TaskModel>> GetTaskById([FromRoute] int id)
         {
-            return BadRequest("Task name is required.");
+            var task = await _mediator.Send(new GetTaskByIdQuery(id));
+            
+            if (task == null)
+            {
+                return NotFound($"Task with ID {id} not found.");
+            }
+
+            return Ok(task);
+        }
+
+        [HttpPost("create")]
+        public async Task<IActionResult> CreateTask([FromBody] string title)
+        {
+            if (string.IsNullOrEmpty(title))
+            {
+                return BadRequest("Task name is required.");
+            }
+            
+            var newTaskId = await _mediator.Send(new CreateTaskQuery(title));
+            
+            return CreatedAtAction(nameof(GetTaskById), new { id = newTaskId }, newTaskId);
         }
         
-        var task = new TaskModel
+        [HttpDelete("delete")]
+        public async Task<IActionResult> DeleteTask([FromQuery] string title)
         {
-            title = title,
-        };
-        _context.TaskModel.Add(task);
-        await _context.SaveChangesAsync();
-        
-        return Ok(task);
-    }
+            if (string.IsNullOrEmpty(title))
+            {
+                return BadRequest("Task title is required.");
+            }
+            
+            var result = await _mediator.Send(new DeleteTaskQuery(title));
+            
+            if (!result)
+            {
+                return NotFound($"Task with title '{title}' not found.");
+            }
 
+            return NoContent();
+        }
+    }
 }

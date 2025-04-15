@@ -5,6 +5,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
+using MediatR;
+using System.Reflection;
+using Tasks.cqrs.Handlers;
+using Tasks.cqrs.Queries;
 
 Env.Load();
 var builder = WebApplication.CreateBuilder(args);
@@ -15,13 +19,17 @@ var keycloakClientId = "tasks-microservice";
 var pgUser = Environment.GetEnvironmentVariable("PG_USER");
 var pgPassword = Environment.GetEnvironmentVariable("PG_PASSWORD");
 
-// Set the connection string with the environment variables
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!
     .Replace("${PG_USER}", pgUser)
     .Replace("${PG_PASSWORD}", pgPassword);
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
+
+builder.Services.AddMediatR(typeof(GetTaskByIdHandler).Assembly);
+builder.Services.AddMediatR(typeof(GetTasksHandler).Assembly);
+builder.Services.AddMediatR(typeof(CreateTaskHandler).Assembly);
+builder.Services.AddMediatR(typeof(DeleteTaskQuery).Assembly);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
