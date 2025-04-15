@@ -9,6 +9,8 @@ using MediatR;
 using System.Reflection;
 using Tasks.cqrs.Handlers;
 using Tasks.cqrs.Queries;
+using MassTransit;
+using Tasks.Background;
 
 Env.Load();
 var builder = WebApplication.CreateBuilder(args);
@@ -30,6 +32,38 @@ builder.Services.AddMediatR(typeof(GetTaskByIdHandler).Assembly);
 builder.Services.AddMediatR(typeof(GetTasksHandler).Assembly);
 builder.Services.AddMediatR(typeof(CreateTaskHandler).Assembly);
 builder.Services.AddMediatR(typeof(DeleteTaskQuery).Assembly);
+
+if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
+{
+    builder.Services.AddMassTransit(config =>
+    {
+        config.UsingRabbitMq((ctx, cfg) =>
+        {
+            cfg.Host("localhost", h =>
+            {
+                h.Username("guest");
+                h.Password("guest");
+            });
+        });
+    });    
+}
+else
+{
+    builder.Services.AddMassTransit(config =>
+    {
+        config.UsingRabbitMq((ctx, cfg) =>
+        {
+            cfg.Host("rabbitmq", h =>
+            {
+                h.Username("guest");
+                h.Password("guest");
+            });
+        });
+    });
+}
+
+
+builder.Services.AddHostedService<OutboxProcessor>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -98,6 +132,7 @@ if (app.Environment.IsDevelopment())
         options.OAuthUsePkce(); // Enables PKCE for security
     });
 }
+
 if (args.Contains("migrate"))
 {
     using (var scope = app.Services.CreateScope())
