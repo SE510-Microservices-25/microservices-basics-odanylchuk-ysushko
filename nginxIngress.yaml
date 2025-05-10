@@ -1,0 +1,73 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: microservices-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/auth-response-headers: "Authorization"
+
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: microservices.local
+      http:
+        paths:
+          - path: /users
+            pathType: Prefix
+            backend:
+              service:
+                name: users-microservice
+                port:
+                  number: 8080
+          - path: /swagger-ui
+            pathType: Prefix
+            backend:
+              service:
+                name: users-microservice
+                port:
+                  number: 8080
+          # needed for the swagger-ui to work
+          - path: /v3/api-docs
+            pathType: Prefix
+            backend:
+              service:
+                name: users-microservice
+                port:
+                  number: 8080
+          # any api request should be forwarded to the users-microservice
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: users-microservice
+                port:
+                  number: 8080
+          - path: /secure
+            pathType: Prefix
+            backend:
+              service:
+                name: users-microservice
+                port:
+                  number: 8080
+          - path: /realms
+            pathType: Prefix
+            backend:
+              service:
+                name: keycloak
+                port:
+                  number: 8080
+          - path: /resources
+            pathType: Prefix
+            backend:
+              service:
+                name: keycloak
+                port:
+                  number: 8080
+          - path: /protocol
+            pathType: Prefix
+            backend:
+              service:
+                name: keycloak
+                port:
+                  number: 8080
+
